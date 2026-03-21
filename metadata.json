@@ -1,0 +1,5 @@
+{
+  "name": "Student Internship Management System",
+  "description": "A full-stack MERN application for managing student internships, connecting students, companies, and lecturers.",
+  "requestFramePermissions": []
+}
