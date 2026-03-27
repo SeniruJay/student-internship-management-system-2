@@ -25,7 +25,7 @@ export default function StudentDashboard() {
   const fetchData = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      
+
       const [profRes, intRes, appRes, vivaRes] = await Promise.all([
         fetch('/api/students/profile', { headers }),
         fetch('/api/students/internships', { headers }),
@@ -188,7 +188,7 @@ export default function StudentDashboard() {
                     <span>{internship.duration}</span>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => handleApply(internship._id)}
                   className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3.5 rounded-full text-base font-semibold hover:scale-[1.02] active:scale-[0.98] shadow-sm transition-all focus:outline-none"
                 >
@@ -220,9 +220,9 @@ export default function StudentDashboard() {
                     <td className="px-8 py-5 whitespace-nowrap text-sm font-medium text-zinc-600 dark:text-zinc-300">{app.internship?.title}</td>
                     <td className="px-8 py-5 whitespace-nowrap">
                       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border
-                        ${app.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 
-                          app.status === 'rejected' ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' : 
-                          'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
+                        ${app.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' :
+                          app.status === 'rejected' ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' :
+                            'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'}`}>
                         {app.status === 'pending' && <Clock className="w-3.5 h-3.5 mr-1.5" />}
                         {app.status === 'approved' && <CheckCircle className="w-3.5 h-3.5 mr-1.5" />}
                         {app.status === 'rejected' && <XCircle className="w-3.5 h-3.5 mr-1.5" />}
