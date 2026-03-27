@@ -93,23 +93,42 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white dark:bg-zinc-900 p-10 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300"
+              className="bg-white dark:bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300 relative h-96"
             >
-              <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-8">
-                <GraduationCap className="h-7 w-7 text-zinc-900 dark:text-white" />
+              <img 
+                src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop&crop=center&auto=format" 
+                alt="Students studying" 
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <GraduationCap className="h-20 w-20 text-white" />
+                </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-white tracking-tight">Students</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed">
-                Showcase your skills, discover opportunities, and track your industry journey with precision.
-              </p>
-              <ul className="space-y-4">
-                {['Build a verified profile portfolio', 'One-click application pipeline', 'Submit synchronized weekly logs'].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-zinc-700 dark:text-zinc-300 text-sm font-medium">
-                    <CheckCircle2 className="h-5 w-5 text-zinc-900 dark:text-white shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-10 text-white">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 border border-white/30">
+                    <GraduationCap className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4 tracking-tight">Students</h3>
+                  <p className="text-white/90 mb-6 leading-relaxed">
+                    Showcase your skills, discover opportunities, and track your industry journey with precision.
+                  </p>
+                  <ul className="space-y-3">
+                    {['Build a verified profile portfolio', 'One-click application pipeline', 'Submit synchronized weekly logs'].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-white/90 text-sm font-medium">
+                        <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </motion.div>
 
             {/* Company Card */}
@@ -118,23 +137,42 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white dark:bg-zinc-900 p-10 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300"
+              className="bg-white dark:bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300 relative h-96"
             >
-              <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-8">
-                <Building2 className="h-7 w-7 text-zinc-900 dark:text-white" />
+              <img 
+                src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=600&h=400&fit=crop&crop=center&auto=format" 
+                alt="Modern office building" 
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Building2 className="h-20 w-20 text-white" />
+                </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-white tracking-tight">Companies</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed">
-                Source top talent seamlessly. Define exact requirements and manage candidate states instantly.
-              </p>
-              <ul className="space-y-4">
-                {['Publish roles programmatically', 'Candidate tracking dashboard', 'Direct bi-directional feedback'].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-zinc-700 dark:text-zinc-300 text-sm font-medium">
-                    <CheckCircle2 className="h-5 w-5 text-zinc-900 dark:text-white shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-10 text-white">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 border border-white/30">
+                    <Building2 className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4 tracking-tight">Companies</h3>
+                  <p className="text-white/90 mb-6 leading-relaxed">
+                    Source top talent seamlessly. Define exact requirements and manage candidate states instantly.
+                  </p>
+                  <ul className="space-y-3">
+                    {['Publish roles programmatically', 'Candidate tracking dashboard', 'Direct bi-directional feedback'].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-white/90 text-sm font-medium">
+                        <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </motion.div>
 
             {/* Lecturer Card */}
@@ -143,23 +181,42 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white dark:bg-zinc-900 p-10 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300"
+              className="bg-white dark:bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm transition-transform hover:-translate-y-1 duration-300 relative h-96"
             >
-              <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-8">
-                <BookOpen className="h-7 w-7 text-zinc-900 dark:text-white" />
+              <img 
+                src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop&crop=center&auto=format" 
+                alt="Teacher in classroom" 
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <BookOpen className="h-20 w-20 text-white" />
+                </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-white tracking-tight">Academic Staff</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed">
-                Maintain academic rigor. Act as the bridge between theoretical learning and industry reality.
-              </p>
-              <ul className="space-y-4">
-                {['Monitor full cohort trajectories', 'Log and review weekly reports', 'Record final assessments securely'].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-zinc-700 dark:text-zinc-300 text-sm font-medium">
-                    <CheckCircle2 className="h-5 w-5 text-zinc-900 dark:text-white shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-10 text-white">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 border border-white/30">
+                    <BookOpen className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4 tracking-tight">Academic Staff</h3>
+                  <p className="text-white/90 mb-6 leading-relaxed">
+                    Maintain academic rigor. Act as the bridge between theoretical learning and industry reality.
+                  </p>
+                  <ul className="space-y-3">
+                    {['Monitor full cohort trajectories', 'Log and review weekly reports', 'Record final assessments securely'].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-white/90 text-sm font-medium">
+                        <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

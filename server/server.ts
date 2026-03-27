@@ -1,5 +1,6 @@
 import express from 'express';
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
 import studentRoutes from './routes/students.js';
 import companyRoutes from './routes/companies.js';
 import lecturerRoutes from './routes/lecturers.js';
@@ -104,6 +105,7 @@ async function startServer() {
 
   // API Routes
   app.use('/api/auth', authRoutes);
+  app.use('/api/users', userRoutes);
   app.use('/api/students', studentRoutes);
   app.use('/api/companies', companyRoutes);
   app.use('/api/lecturers', lecturerRoutes);
