@@ -49,13 +49,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 font-sans flex flex-col relative overflow-hidden transition-colors duration-300">
-            {/* Global Background Glows */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 dark:bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none fixed" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-600/10 dark:bg-amber-600/20 blur-[120px] rounded-full pointer-events-none fixed" />
-            
+          <div className="min-h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 font-sans flex flex-col relative transition-colors duration-300">
             <Navbar />
-            <main className="flex-grow flex flex-col relative z-10">
+            <main className="flex-grow flex flex-col relative z-10 bg-zinc-50 dark:bg-zinc-950">
               <Routes>
                 <Route path="/" element={<Landing />} />
                 
