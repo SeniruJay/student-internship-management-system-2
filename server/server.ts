@@ -1,22 +1,16 @@
 import express from 'express';
-import { createServer as createViteServer } from 'vite';
+import authRoutes from './routes/auth.js';
+import studentRoutes from './routes/students.js';
+import companyRoutes from './routes/companies.js';
+import lecturerRoutes from './routes/lecturers.js';
+import { User } from './models/User.js';
+import { Internship } from './models/Internship.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import authRoutes from './server/routes/auth.js';
-import studentRoutes from './server/routes/students.js';
-import companyRoutes from './server/routes/companies.js';
-import lecturerRoutes from './server/routes/lecturers.js';
-import { User } from './server/models/User.js';
-import { Internship } from './server/models/Internship.js';
 import bcrypt from 'bcryptjs';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function seedDatabase() {
   try {
@@ -118,20 +112,17 @@ async function startServer() {
     res.json({ status: 'ok' });
   });
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
+  // Enable CORS for client
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
