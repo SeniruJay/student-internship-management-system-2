@@ -9,9 +9,10 @@ import { Internship } from './models/Internship.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import dotenv from 'dotenv';
+import path from 'path';
 import bcrypt from 'bcryptjs';
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 async function seedDatabase() {
   try {
