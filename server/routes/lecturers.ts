@@ -4,6 +4,7 @@ import { StudentProfile } from '../models/StudentProfile.js';
 import { Application } from '../models/Application.js';
 import { Report } from '../models/Report.js';
 import { Viva } from '../models/Viva.js';
+import { FinalGrade } from '../models/FinalGrade.js';
 
 const router = express.Router();
 
@@ -86,6 +87,59 @@ router.put('/viva/:id/grade', authenticate, authorize(['lecturer']), async (req:
     viva.grade = grade;
     await viva.save();
     res.json({ viva });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Final Grading
+router.post('/final-grade/:studentId', authenticate, authorize(['lecturer']), async (req: AuthRequest, res) => {
+  try {
+    const { attendance, vivaMarks, reportMarks, companyReview, finalScore, finalGrade } = req.body;
+    const studentId = req.params.studentId;
+    
+    // Check if already graded
+    const existingGrade = await FinalGrade.findOne({ student: studentId });
+    if (existingGrade) {
+      return res.status(400).json({ error: 'Student has already been graded' });
+    }
+    
+    // Create final grade record
+    const finalGradeRecord = new FinalGrade({
+      student: studentId,
+      lecturer: req.user?.id,
+      attendance,
+      vivaMarks,
+      reportMarks,
+      companyReview,
+      finalScore,
+      finalGrade
+    });
+    
+    await finalGradeRecord.save();
+    
+    res.status(201).json({ 
+      message: 'Final grade submitted successfully',
+      finalGrade: finalGradeRecord 
+    });
+  } catch (err) {
+    console.error('Final grading error:', err);
+    res.status(500).json({ 
+      error: 'Server error',
+      details: err.message || 'Unknown error occurred',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+});
+
+// Get final grades for students
+router.get('/final-grades', authenticate, authorize(['lecturer']), async (req: AuthRequest, res) => {
+  try {
+    const finalGrades = await FinalGrade.find()
+      .populate('student', 'name email')
+      .populate('lecturer', 'name');
+    
+    res.json({ finalGrades });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }

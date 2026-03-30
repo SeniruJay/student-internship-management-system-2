@@ -6,18 +6,26 @@ import companyRoutes from './routes/companies.js';
 import lecturerRoutes from './routes/lecturers.js';
 import { User } from './models/User.js';
 import { Internship } from './models/Internship.js';
+import { FinalGrade } from './models/FinalGrade.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import dotenv from 'dotenv';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 
-dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+dotenv.config({ path: path.join(process.cwd(), '..', '.env') });
 
 async function seedDatabase() {
   try {
     const companyCount = await User.countDocuments({ role: 'company' });
-    if (companyCount === 0) {
+    const studentCount = await User.countDocuments({ role: 'student' });
+    const lecturerCount = await User.countDocuments({ role: 'lecturer' });
+    
+    console.log(`📊 Database stats: ${companyCount} companies, ${studentCount} students, ${lecturerCount} lecturers`);
+    
+    // Only seed if database is completely empty
+    if (companyCount === 0 && studentCount === 0 && lecturerCount === 0) {
+      console.log('🌱 Database is empty. Seeding initial data...');
       const hashedPassword = await bcrypt.hash('password123', 10);
       
       const techCorp = await User.create({
@@ -75,10 +83,55 @@ async function seedDatabase() {
           status: 'open'
         }
       ]);
-      console.log('Database seeded with dummy internships.');
+      
+      // Add students
+      const studentPassword = await bcrypt.hash('password123', 10);
+      
+      await User.create([
+        {
+          name: 'John Smith',
+          email: 'john.smith@student.com',
+          password: studentPassword,
+          role: 'student'
+        },
+        {
+          name: 'Sarah Johnson',
+          email: 'sarah.johnson@student.com',
+          password: studentPassword,
+          role: 'student'
+        },
+        {
+          name: 'Mike Wilson',
+          email: 'mike.wilson@student.com',
+          password: studentPassword,
+          role: 'student'
+        }
+      ]);
+
+      // Add lecturers
+      const lecturerPassword = await bcrypt.hash('password123', 10);
+      
+      await User.create([
+        {
+          name: 'Dr. Emily Chen',
+          email: 'emily.chen@lecturer.com',
+          password: lecturerPassword,
+          role: 'lecturer'
+        },
+        {
+          name: 'Prof. James Brown',
+          email: 'james.brown@lecturer.com',
+          password: lecturerPassword,
+          role: 'lecturer'
+        }
+      ]);
+      
+      console.log('✅ Database seeded with initial data.');
+    } else {
+      console.log('✅ Database already contains data. Skipping seeding.');
     }
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('❌ Error seeding database:', error);
   }
 }
 
@@ -91,17 +144,38 @@ async function startServer() {
   // Connect to MongoDB
   let mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.log('Starting in-memory MongoDB...');
+    console.log('⚠️  MONGODB_URI not found in .env file');
+    console.log('📝 Please add your MongoDB Atlas connection string to .env file:');
+    console.log('   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority');
+    console.log('💡 Using in-memory MongoDB for now...');
     const mongoServer = await MongoMemoryServer.create();
     mongoUri = mongoServer.getUri();
+  } else {
+    console.log('🔗 Connecting to MongoDB Atlas...');
   }
 
   try {
-    await mongoose.connect(mongoUri);
-    console.log('Connected to MongoDB');
+    console.log('🔗 Connecting to MongoDB Atlas...');
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      connectTimeoutMS: 10000, // 10 second timeout
+    });
+    console.log('✅ Connected to MongoDB Atlas successfully!');
     await seedDatabase();
   } catch (err) {
-    console.error('MongoDB connection error:', err);
+    console.error('❌ MongoDB connection error:', err);
+    console.log('💡 Falling back to in-memory MongoDB...');
+    
+    try {
+      const mongoServer = await MongoMemoryServer.create();
+      const fallbackUri = mongoServer.getUri();
+      await mongoose.connect(fallbackUri);
+      console.log('✅ Connected to in-memory MongoDB');
+      await seedDatabase();
+    } catch (fallbackErr) {
+      console.error('❌ Failed to connect to in-memory MongoDB:', fallbackErr);
+      process.exit(1);
+    }
   }
 
   // API Routes
