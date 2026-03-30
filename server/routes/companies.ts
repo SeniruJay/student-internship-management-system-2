@@ -10,10 +10,10 @@ const router = express.Router();
 // Internships
 router.post('/internships', authenticate, authorize(['company']), async (req: AuthRequest, res) => {
   try {
-    const { title, description, requirements, duration } = req.body;
+    const { title, description, requirements, duration, deadline } = req.body;
     const internship = new Internship({
       company: req.user?.id,
-      title, description, requirements, duration
+      title, description, requirements, duration, deadline
     });
     await internship.save();
     res.status(201).json({ internship });

@@ -44,6 +44,28 @@ export default function CompanyDashboard() {
 
   const handlePostInternship = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handlePostInternship called');
+    console.log('Form data:', { title, description, requirements, duration, deadline });
+    console.log('Token exists:', token ? 'yes' : 'no');
+    
+    if (!title?.trim() || !description?.trim() || !requirements?.trim() || !duration?.trim() || !deadline?.trim()) {
+      console.log('Validation failed:');
+      console.log('title:', title, 'length:', title?.length, 'trimmed:', title?.trim(), 'type:', typeof title);
+      console.log('description:', description, 'length:', description?.length, 'trimmed:', description?.trim(), 'type:', typeof description);
+      console.log('requirements:', requirements, 'length:', requirements?.length, 'trimmed:', requirements?.trim(), 'type:', typeof requirements);
+      console.log('duration:', duration, 'length:', duration?.length, 'trimmed:', duration?.trim(), 'type:', typeof duration);
+      console.log('deadline:', deadline, 'length:', deadline?.length, 'trimmed:', deadline?.trim(), 'type:', typeof deadline, 'value:', deadline);
+      console.log('All checks passed:', {
+        title: !!title?.trim(),
+        description: !!description?.trim(),
+        requirements: !!requirements?.trim(),
+        duration: !!duration?.trim(),
+        deadline: !!deadline?.trim()
+      });
+      alert('Please fill all required fields');
+      return;
+    }
+    
     try {
       const res = await fetch('/api/companies/internships', {
         method: 'POST',
@@ -53,13 +75,24 @@ export default function CompanyDashboard() {
         },
         body: JSON.stringify({ title, description, requirements, duration, deadline })
       });
+      
+      console.log('Response status:', res.status);
+      console.log('Response ok:', res.ok);
+      
       if (res.ok) {
+        const data = await res.json();
+        console.log('Success response:', data);
         alert('Internship posted successfully');
         setTitle(''); setDescription(''); setRequirements(''); setDuration(''); setDeadline('');
         fetchData();
+      } else {
+        const errorData = await res.json();
+        console.error('Server error:', errorData);
+        alert(`Error posting internship: ${errorData.error || 'Unknown error'}`);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Network error:', err);
+      alert('Network error. Please check your connection and try again.');
     }
   };
 
@@ -141,7 +174,7 @@ export default function CompanyDashboard() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Description & Requirements</label>
-              <textarea required rows={5} value={description} onChange={e => setDescription(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow" placeholder="Describe role, responsibilities, and required skills..."></textarea>
+              <textarea required rows={5} value={requirements} onChange={e => setRequirements(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow" placeholder="Describe role, responsibilities, and required skills..."></textarea>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
