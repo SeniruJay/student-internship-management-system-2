@@ -16,6 +16,9 @@ export default function CompanyDashboard() {
   const [duration, setDuration] = useState('');
   const [deadline, setDeadline] = useState('');
 
+  // Validation State
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -42,27 +45,75 @@ export default function CompanyDashboard() {
     }
   };
 
+  const validateField = (fieldName: string, value: string) => {
+    const newErrors = { ...errors };
+    
+    switch (fieldName) {
+      case 'title':
+        if (!value.trim()) {
+          newErrors.title = 'Job title is required';
+        } else if (value.trim().length < 5) {
+          newErrors.title = 'Job title must be at least 5 characters long';
+        } else if (value.trim().length > 100) {
+          newErrors.title = 'Job title must be less than 100 characters';
+        } else {
+          delete newErrors.title;
+        }
+        break;
+      case 'description':
+        if (!value.trim()) {
+          newErrors.description = 'Description is required';
+        } else if (value.trim().length < 20) {
+          newErrors.description = 'Description must be at least 20 characters long';
+        } else if (value.trim().length > 1000) {
+          newErrors.description = 'Description must be less than 1000 characters';
+        } else {
+          delete newErrors.description;
+        }
+        break;
+      case 'requirements':
+        if (!value.trim()) {
+          newErrors.requirements = 'Requirements are required';
+        } else if (value.trim().length < 20) {
+          newErrors.requirements = 'Requirements must be at least 20 characters long';
+        } else if (value.trim().length > 1000) {
+          newErrors.requirements = 'Requirements must be less than 1000 characters';
+        } else {
+          delete newErrors.requirements;
+        }
+        break;
+      case 'duration':
+        if (!value.trim()) {
+          newErrors.duration = 'Duration is required';
+        } else if (!/^\d+\s+(month|week|day|year)s?$/i.test(value.trim())) {
+          newErrors.duration = 'Duration must be in format: "6 months", "3 weeks", etc.';
+        } else {
+          delete newErrors.duration;
+        }
+        break;
+      case 'deadline':
+        if (!value) {
+          newErrors.deadline = 'Application deadline is required';
+        } else {
+          const deadlineDate = new Date(value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (deadlineDate <= today) {
+            newErrors.deadline = 'Application deadline must be in the future';
+          } else {
+            delete newErrors.deadline;
+          }
+        }
+        break;
+    }
+    
+    setErrors(newErrors);
+  };
+
   const handlePostInternship = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handlePostInternship called');
-    console.log('Form data:', { title, description, requirements, duration, deadline });
-    console.log('Token exists:', token ? 'yes' : 'no');
     
-    if (!title?.trim() || !description?.trim() || !requirements?.trim() || !duration?.trim() || !deadline?.trim()) {
-      console.log('Validation failed:');
-      console.log('title:', title, 'length:', title?.length, 'trimmed:', title?.trim(), 'type:', typeof title);
-      console.log('description:', description, 'length:', description?.length, 'trimmed:', description?.trim(), 'type:', typeof description);
-      console.log('requirements:', requirements, 'length:', requirements?.length, 'trimmed:', requirements?.trim(), 'type:', typeof requirements);
-      console.log('duration:', duration, 'length:', duration?.length, 'trimmed:', duration?.trim(), 'type:', typeof duration);
-      console.log('deadline:', deadline, 'length:', deadline?.length, 'trimmed:', deadline?.trim(), 'type:', typeof deadline, 'value:', deadline);
-      console.log('All checks passed:', {
-        title: !!title?.trim(),
-        description: !!description?.trim(),
-        requirements: !!requirements?.trim(),
-        duration: !!duration?.trim(),
-        deadline: !!deadline?.trim()
-      });
-      alert('Please fill all required fields');
+    if (!validateForm()) {
       return;
     }
     
@@ -84,6 +135,7 @@ export default function CompanyDashboard() {
         console.log('Success response:', data);
         alert('Internship posted successfully');
         setTitle(''); setDescription(''); setRequirements(''); setDuration(''); setDeadline('');
+        setErrors({});
         fetchData();
       } else {
         const errorData = await res.json();
@@ -170,20 +222,88 @@ export default function CompanyDashboard() {
           <form onSubmit={handlePostInternship} className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Job Title</label>
-              <input type="text" required value={title} onChange={e => setTitle(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow" placeholder="e.g. Software Engineering Intern" />
+              <input 
+                type="text" 
+                required 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                onBlur={e => validateField('title', e.target.value)}
+                className={`block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow ${
+                  errors.title 
+                    ? 'ring-red-500/50 focus:ring-red-500/50' 
+                    : 'ring-white/30 dark:ring-zinc-700/50 focus:ring-white/50 dark:focus:ring-zinc-600/50'
+                }`} 
+                placeholder="e.g. Software Engineering Intern" 
+              />
+              {errors.title && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>}
             </div>
             <div>
-              <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Description & Requirements</label>
-              <textarea required rows={5} value={requirements} onChange={e => setRequirements(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow" placeholder="Describe role, responsibilities, and required skills..."></textarea>
+              <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Description</label>
+              <textarea 
+                required 
+                rows={4} 
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
+                onBlur={e => validateField('description', e.target.value)}
+                className={`block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow ${
+                  errors.description 
+                    ? 'ring-red-500/50 focus:ring-red-500/50' 
+                    : 'ring-white/30 dark:ring-zinc-700/50 focus:ring-white/50 dark:focus:ring-zinc-600/50'
+                }`} 
+                placeholder="Provide a detailed description of the internship role..."
+              />
+              {errors.description && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Requirements</label>
+              <textarea 
+                required 
+                rows={5} 
+                value={requirements} 
+                onChange={e => setRequirements(e.target.value)} 
+                onBlur={e => validateField('requirements', e.target.value)}
+                className={`block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow ${
+                  errors.requirements 
+                    ? 'ring-red-500/50 focus:ring-red-500/50' 
+                    : 'ring-white/30 dark:ring-zinc-700/50 focus:ring-white/50 dark:focus:ring-zinc-600/50'
+                }`} 
+                placeholder="List the required skills, qualifications, and experience..."
+              />
+              {errors.requirements && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.requirements}</p>}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Duration</label>
-                <input type="text" required value={duration} onChange={e => setDuration(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow" placeholder="e.g. 6 Months" />
+                <input 
+                  type="text" 
+                  required 
+                  value={duration} 
+                  onChange={e => setDuration(e.target.value)} 
+                  onBlur={e => validateField('duration', e.target.value)}
+                  className={`block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow ${
+                    errors.duration 
+                      ? 'ring-red-500/50 focus:ring-red-500/50' 
+                      : 'ring-white/30 dark:ring-zinc-700/50 focus:ring-white/50 dark:focus:ring-zinc-600/50'
+                  }`} 
+                  placeholder="e.g. 6 Months" 
+                />
+                {errors.duration && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.duration}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Application Deadline</label>
-                <input type="date" required value={deadline} onChange={e => setDeadline(e.target.value)} className="block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset ring-white/30 dark:ring-zinc-700/50 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-white/50 dark:focus:ring-zinc-600/50 sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow w-full" />
+                <input 
+                  type="date" 
+                  required 
+                  value={deadline} 
+                  onChange={e => setDeadline(e.target.value)} 
+                  onBlur={e => validateField('deadline', e.target.value)}
+                  className={`block w-full rounded-xl border-0 py-3 px-4 text-zinc-900 dark:text-zinc-50 shadow-sm ring-1 ring-inset placeholder:text-zinc-500 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 bg-white/10 dark:bg-zinc-800/10 backdrop-blur-sm transition-shadow w-full ${
+                    errors.deadline 
+                      ? 'ring-red-500/50 focus:ring-red-500/50' 
+                    : 'ring-white/30 dark:ring-zinc-700/50 focus:ring-white/50 dark:focus:ring-zinc-600/50'
+                  }`} 
+                />
+                {errors.deadline && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.deadline}</p>}
               </div>
             </div>
             <div className="pt-2">
